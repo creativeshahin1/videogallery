@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Looker Studio Scaled Iframe</title>
+<style>
+/* ---------------------------------- */
+/* 1. CSS Styles */
+/* ---------------------------------- */
+/* container */
+.looker-studio-container {
+  position: relative;
+  width: 100%;
+  height: 750px;        /* আপনার প্রয়োজন মত বদলে নিতে পারেন */
+  overflow: hidden;     /* কোনো স্ক্রল দেখবেন না */
+  background: transparent;
+}
+
+/* iframe কে intrinsic size ধরে রাখা, তারপর scale করা হবে */
+.looker-studio-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2000px;   /* iframe tag-এ যে width/height আছে, সেটিই রাখুন (2000px) */
+  height: 750px;
+  border: 0;
+  transform-origin: top left; /* scale টিকে টপ-লেফ্ট পয়েন্ট থেকে করা হবে */
+  -webkit-transform-origin: top left;
+  display: block;
+  pointer-events: auto; /* iframe-এর ক্লিকিং কাজ করবে */
+  /* কোনো iframe-level scroll bar দেখানোর চেষ্টা করলে block করবে */
+  overflow: hidden;
+  scrollbar-width: none; /* firefox */
+}
+
+/* লাল চতুর্ভুজ — কেবল overlay (iframe-এর উপরে) */
+.looker-studio-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 247px;
+  opacity: 1;   /* 🔸 ৩০% স্বচ্ছতা */
+  width: 170px;
+  height: 25px;
+  background-color: white;
+  pointer-events: none; /* ক্লিক ব্লক না করবে */
+  z-index: 999;         /* iframe-এর উপরে থাকবে */
+}
+
+/* (ঐচ্ছিক) যদি পুরো পেজেই কোন আনচাহিদা স্ক্রল রোধ করতে চান */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="looker-studio-container">
+  <iframe id="ls-iframe"
+          width="2000" height="750"
+          src="https://lookerstudio.google.com/embed/reporting/b460257e-fe39-4a35-aa52-8092a04d5c65/page/JfOWF"
+          frameborder="0" style="border:0"
+          allowfullscreen
+          sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+  ></iframe>
+</div>
+
+<script>
+/*
+  Scale iframe to fit its container WITHOUT producing scrollbars.
+  Uses iframe's intrinsic width/height attributes (2000x750).
+*/
+(function() {
+  const iframe = document.getElementById('ls-iframe');
+  const container = iframe.parentElement;
+
+  // intrinsic size (এটি iframe-এর width/height অ্যাট্রিবিউট থেকে 2000x750 নেয়)
+  const intrinsicWidth = parseFloat(iframe.getAttribute('width')) || 2000;
+  const intrinsicHeight = parseFloat(iframe.getAttribute('height')) || 750;
+
+  function applyScale() {
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+
+    // smallest scale that fits both width and height
+    const scale = Math.min(cw / intrinsicWidth, ch / intrinsicHeight);
+
+    // apply transform scale
+    iframe.style.transform = 'scale(' + scale + ')';
+
+    // Calculate translation to center
+    const scaledW = intrinsicWidth * scale;
+    const scaledH = intrinsicHeight * scale;
+
+    // center horizontally and vertically inside container:
+    const translateX = Math.max(0, (cw - scaledW) / 2);
+    const translateY = Math.max(0, (ch - scaledH) / 2);
+
+    // move it via left/top:
+    iframe.style.left = translateX + 'px';
+    iframe.style.top  = translateY + 'px';
+
+    // ensure iframe element still has its intrinsic size (so scale works predictably)
+    iframe.style.width = intrinsicWidth + 'px';
+    iframe.style.height = intrinsicHeight + 'px';
+
+    // ensure iframe is above background but below overlay pseudo-element (overlay has z-index:999)
+    iframe.style.zIndex = 1;
+  }
+
+  // run initially
+  applyScale();
+
+  // update on resize (debounced)
+  let rTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(rTimer);
+    rTimer = setTimeout(applyScale, 60);
+  });
+
+  // optional: observe container size changes (more robust)
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(applyScale);
+    ro.observe(container);
+  }
+})();
+</script>
+</body>
+</html>
