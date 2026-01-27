@@ -1,129 +1,263 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Looker Studio Scaled Iframe</title>
+<title>Looker Studio Tabbed Dashboard (সংশোধিত)</title>
 <style>
 /* ---------------------------------- */
-/* 1. CSS Styles */
+/* 1. Tab Structure CSS */
 /* ---------------------------------- */
+.tabs {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    margin-bottom: 5px; /* কন্টেন্টের সাথে সামান্য দূরত্ব */
+}
+
+.tab-button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+.tab-button:hover {
+    background-color: #ddd;
+}
+
+.tab-button.active {
+    background-color: #ccc;
+    border-bottom: 3px solid #1abc9c; /* active tab-এর নিচে হাইলাইট */
+}
+
+.tab-content {
+    display: none; /* ডিফল্টভাবে সব কনটেন্ট লুকিয়ে রাখা */
+    padding: 0;
+}
+
+.tab-content.active-tab {
+    display: block; /* সক্রিয় ট্যাগ কনটেন্ট দেখানো */
+}
+
+/* ---------------------------------- */
+/* 2. Original Looker Studio CSS */
+/* ---------------------------------- */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* সম্পূর্ণ উচ্চতা ব্যবহার করতে */
+}
+
 /* container */
 .looker-studio-container {
-  position: relative;
-  width: 100%;
-  height: 750px;        /* আপনার প্রয়োজন মত বদলে নিতে পারেন */
-  overflow: hidden;     /* কোনো স্ক্রল দেখবেন না */
-  background: transparent;
+    position: relative;
+    width: 100%;
+    height: 750px; /* আপনার প্রয়োজন মত বদলে নিতে পারেন */
+    overflow: hidden; /* কোনো স্ক্রল দেখবেন না */
+    background: transparent;
 }
 
 /* iframe কে intrinsic size ধরে রাখা, তারপর scale করা হবে */
 .looker-studio-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 2000px;   /* iframe tag-এ যে width/height আছে, সেটিই রাখুন (2000px) */
-  height: 750px;
-  border: 0;
-  transform-origin: top left; /* scale টিকে টপ-লেফ্ট পয়েন্ট থেকে করা হবে */
-  -webkit-transform-origin: top left;
-  display: block;
-  pointer-events: auto; /* iframe-এর ক্লিকিং কাজ করবে */
-  /* কোনো iframe-level scroll bar দেখানোর চেষ্টা করলে block করবে */
-  overflow: hidden;
-  scrollbar-width: none; /* firefox */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2000px; /* ইন্ট্রিনসিক width (JS-এর সাথে সামঞ্জস্যপূর্ণ) */
+    height: 750px;
+    border: 0;
+    transform-origin: top left;
+    -webkit-transform-origin: top left;
+    display: block;
+    pointer-events: auto;
+    overflow: hidden;
+    scrollbar-width: none;
 }
 
 /* লাল চতুর্ভুজ — কেবল overlay (iframe-এর উপরে) */
 .looker-studio-container::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 247px;
-  opacity: 1;   /* 🔸 ৩০% স্বচ্ছতা */
-  width: 170px;
-  height: 25px;
-  background-color: white;
-  pointer-events: none; /* ক্লিক ব্লক না করবে */
-  z-index: 999;         /* iframe-এর উপরে থাকবে */
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 247px;
+    opacity: 1;
+    width: 170px;
+    height: 25px;
+    background-color: white;
+    pointer-events: none; /* ক্লিক ব্লক করবে না */
+    z-index: 999;
 }
 
-/* (ঐচ্ছিক) যদি পুরো পেজেই কোন আনচাহিদা স্ক্রল রোধ করতে চান */
-html, body {
-  margin: 0;
-  padding: 0;
-}
 </style>
 </head>
 <body>
 
-<div class="looker-studio-container">
-  <iframe id="ls-iframe"
-          width="2000" height="750"
-          src="https://lookerstudio.google.com/embed/reporting/b460257e-fe39-4a35-aa52-8092a04d5c65/page/JfOWF"
-          frameborder="0" style="border:0"
-          allowfullscreen
-          sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-  ></iframe>
+<div class="tabs">
+    <button class="tab-button" onclick="openTab(event, 'Baraqah-IT')">Baraqah-IT</button>
+    <button class="tab-button" onclick="openTab(event, 'CTC')">CTC</button>
 </div>
 
+<div id="Baraqah-IT" class="tab-content">
+    <div class="looker-studio-container">
+        <iframe id="ls-iframe-baraqahit"
+                width="2000" height="750"
+                src="https://lookerstudio.google.com/embed/reporting/b460257e-fe39-4a35-aa52-8092a04d5c65/page/JfOWF"
+                frameborder="0" style="border:0"
+                allowfullscreen
+                sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        ></iframe>
+    </div>
+</div>
+
+<div id="CTC" class="tab-content">
+    <div class="looker-studio-container">
+        <iframe id="ls-iframe-ctc"
+                width="2000" height="750"
+                src="https://lookerstudio.google.com/embed/reporting/2d1ac747-e7d8-48ec-9aa4-79aa9f2e5dda/page/JfOWF"
+                frameborder="0" style="border:0"
+                allowfullscreen
+                sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+        ></iframe>
+    </div>
+</div>
+
+
 <script>
-/*
-  Scale iframe to fit its container WITHOUT producing scrollbars.
-  Uses iframe's intrinsic width/height attributes (2000x750).
-*/
-(function() {
-  const iframe = document.getElementById('ls-iframe');
-  const container = iframe.parentElement;
+// Intrinsic size for scaling (must match iframe width/height attributes in HTML)
+const intrinsicWidth = 2000;
+const intrinsicHeight = 750;
 
-  // intrinsic size (এটি iframe-এর width/height অ্যাট্রিবিউট থেকে 2000x750 নেয়)
-  const intrinsicWidth = parseFloat(iframe.getAttribute('width')) || 2000;
-  const intrinsicHeight = parseFloat(iframe.getAttribute('height')) || 750;
+function applyScale(iframeId) {
+    const iframe = document.getElementById(iframeId);
+    if (!iframe) return;
 
-  function applyScale() {
-    const cw = container.clientWidth;
-    const ch = container.clientHeight;
+    const container = iframe.parentElement;
 
-    // smallest scale that fits both width and height
-    const scale = Math.min(cw / intrinsicWidth, ch / intrinsicHeight);
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    
+    // যদি কন্টেইনারটি লুকানো থাকে (যেমন, ইনএক্টিভ ট্যাবে)
+    if (cw === 0 || ch === 0) {
+        // এই ক্ষেত্রে, ডিফল্ট ইন্ট্রিনসিক সাইজ সেট করে ফিরে যান
+        iframe.style.width = intrinsicWidth + 'px';
+        iframe.style.height = intrinsicHeight + 'px';
+        iframe.style.transform = 'scale(0)'; // লুকানো থাকলে স্কেল শূন্য করে দিন
+        return; 
+    }
 
-    // apply transform scale
-    iframe.style.transform = 'scale(' + scale + ')';
+    // smallest scale that fits both width and height
+    const scale = Math.min(cw / intrinsicWidth, ch / intrinsicHeight);
 
-    // Calculate translation to center
-    const scaledW = intrinsicWidth * scale;
-    const scaledH = intrinsicHeight * scale;
+    // apply transform scale
+    iframe.style.transform = 'scale(' + scale + ')';
 
-    // center horizontally and vertically inside container:
-    const translateX = Math.max(0, (cw - scaledW) / 2);
-    const translateY = Math.max(0, (ch - scaledH) / 2);
+    // Calculate translation to center
+    const scaledW = intrinsicWidth * scale;
+    const scaledH = intrinsicHeight * scale;
 
-    // move it via left/top:
-    iframe.style.left = translateX + 'px';
-    iframe.style.top  = translateY + 'px';
+    // center horizontally and vertically inside container:
+    const translateX = Math.max(0, (cw - scaledW) / 2);
+    const translateY = Math.max(0, (ch - scaledH) / 2);
 
-    // ensure iframe element still has its intrinsic size (so scale works predictably)
-    iframe.style.width = intrinsicWidth + 'px';
-    iframe.style.height = intrinsicHeight + 'px';
+    // move it via left/top:
+    iframe.style.left = translateX + 'px';
+    iframe.style.top  = translateY + 'px';
 
-    // ensure iframe is above background but below overlay pseudo-element (overlay has z-index:999)
-    iframe.style.zIndex = 1;
-  }
+    // ensure iframe element still has its intrinsic size
+    iframe.style.width = intrinsicWidth + 'px';
+    iframe.style.height = intrinsicHeight + 'px';
+    
+    iframe.style.zIndex = 1;
+}
 
-  // run initially
-  applyScale();
 
-  // update on resize (debounced)
-  let rTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(rTimer);
-    rTimer = setTimeout(applyScale, 60);
-  });
+function openTab(evt, tabName) {
+    // 1. Hide all tab contents
+    const tabContents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove("active-tab"); // Hides it via CSS (display: none)
+    }
 
-  // optional: observe container size changes (more robust)
-  if (window.ResizeObserver) {
-    const ro = new ResizeObserver(applyScale);
-    ro.observe(container);
-  }
-})();
+    // 2. Deactivate all tab buttons
+    const tabButtons = document.getElementsByClassName("tab-button");
+    for (let i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].classList.remove("active");
+    }
+
+    // 3. Show the current tab, add active class to button and content
+    const activeContent = document.getElementById(tabName);
+    activeContent.classList.add("active-tab"); // This sets display: block
+    
+    // Activate the clicked button
+    if (evt && evt.currentTarget) {
+        evt.currentTarget.classList.add("active");
+    } else {
+        // For initial load: find and activate the first button
+        const initialButton = document.querySelector('.tab-button');
+        if (initialButton) {
+            initialButton.classList.add('active');
+        }
+    }
+
+
+    // 4. Re-apply scale to the visible iframe (essential for proper rendering/sizing)
+    const iframeId = 'ls-iframe-' + tabName.toLowerCase().replace('-', ''); 
+    
+    // সামান্য ডিলে (delay) করে স্কেলিং করা হয় যাতে কন্টেইনারটি সম্পূর্ণভাবে visible হয় এবং browser layout calculation শেষ হয়
+    setTimeout(() => {
+        applyScale(iframeId);
+    }, 100); // 100ms delay for stability
+}
+
+
+// ----------------------------------------------------
+// Initialization & Resize Handling
+// ----------------------------------------------------
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Initial Tab Load: প্রথম ট্যাবটি সক্রিয় করুন
+    openTab(null, 'Baraqah-IT');
+});
+
+
+// Update scale on window resize (debounced)
+let rTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(rTimer);
+    rTimer = setTimeout(() => {
+        // Find the currently active tab content
+        const activeTabContent = document.querySelector('.tab-content.active-tab');
+        if (activeTabContent) {
+            // Get the ID of the iframe inside the active tab
+            const activeIframe = activeTabContent.querySelector('iframe');
+            if (activeIframe) {
+                applyScale(activeIframe.id);
+            }
+        }
+    }, 60);
+});
+
+
+// Optional: observe container size changes (more robust than window resize)
+if (window.ResizeObserver) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const containers = document.querySelectorAll('.looker-studio-container');
+        containers.forEach(container => {
+            const ro = new ResizeObserver(() => {
+                // Find the iframe inside this container
+                const iframe = container.querySelector('iframe');
+                // Only scale if the parent tab content is currently visible (active-tab)
+                if (iframe && container.closest('.tab-content.active-tab')) {
+                    applyScale(iframe.id);
+                }
+            });
+            ro.observe(container);
+        });
+    });
+}
+
 </script>
 </body>
 </html>
